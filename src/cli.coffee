@@ -51,13 +51,15 @@ class Entity
       else if xd < 0
         @moveRight()
 
-e = (ch, co) ->
+e = (ch, co, x, y) ->
   en = new Entity ch, co
-  en.x = rc()
-  en.y = rr()
+  en.x = x
+  en.y = y
   en
 
-me = e '¤', 'cyan'
+re = (ch, co) -> e ch, co, rc(), rr()
+
+me = re '¤', 'cyan'
 me.die = ->
   message 'Game over, you died :(', 'red'
   game_over = yes
@@ -66,9 +68,10 @@ entities = []
 
 num_enemies = 4
 for i in [0...num_enemies]
-  entities.push e '¥', 'red'
+  entities.push re '¥', 'red'
 
 checkForCollision = (left, right) ->
+  return if left.dead or right.dead
   if left.x is right.x and left.y is right.y
     left.die()
     right.die()
