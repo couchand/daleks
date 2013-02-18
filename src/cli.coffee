@@ -18,14 +18,17 @@ show_message = ->
   charm.position(0, rows).foreground(message_color).write(current_message)
 
 class Entity
-  constructor: (@character, @color) ->
+  constructor: (@character, @color) -> @dead = no
   show: ->
+    return if @dead
     charm.position( @x, @y ).foreground( @color ).write @character
+  die: -> @dead = yes
   moveLeft: -> @x = Math.max 1, @x-1
   moveDown: -> @y = Math.min rows-2, @y+1
   moveUp: -> @y = Math.max 1, @y-1
   moveRight: -> @x = Math.min cols, @x+1
   moveTowards: (other) ->
+    return if @dead
     xd = @x - other.x
     yd = @y - other.y
     xda = Math.abs xd
@@ -48,6 +51,11 @@ e = (ch, co, x, y) ->
   en
 
 me = e '¤', 'cyan', 15, 15
+
+me.die = ->
+  message 'Game over, you died :(', 'red'
+  game_over = yes
+
 entities = [
   e '¥', 'red', 7, 5
   e '¥', 'red', 1, 15
@@ -55,17 +63,33 @@ entities = [
   e '¥', 'red', 14, 17
 ]
 
-setInterval( (->
+checkForCollision = (left, right) ->
+  if left.x is right.x and left.y is right.y
+    left.die()
+    right.die()
+    wreckage = e '*', 'yellow', left.x, left.y
+    wreckage.die = wreckage.moveTowards = ->
+    entities.push wreckage
+
+checkForCollisions = ->
+  for i in [0...entities.length]
+    checkForCollision me, entities[i]
+    for j in [i+1...entities.length]
+      checkForCollision entities[i], entities[j]
+
+redraw = ->
   charm.erase 'screen'
   entity.show() for entity in entities
   me.show()
   show_message()
   charm.position( cols-1, rows-1 )
-), 100)
 
+setInterval redraw, 100
+
+game_over = no
 exiting = no
 
-exit = (chr) ->
+do_exit = (chr) ->
   unless exiting
     exiting = yes
     message "#{chr} again to quit...",'cyan'
@@ -74,7 +98,12 @@ exit = (chr) ->
   process.exit()
 
 process.stdin.on 'data', (c) ->
-  return exit 'q' if "#{c}" is 'q'
+  return do_exit 'q' if "#{c}" is 'q'
+  if game_over
+    switch "#{c}"
+      when 'y' then restartGame()
+      else do_exit 'q'
+    return
   exiting = no
   switch "#{c}"
     when 'h' then me.moveLeft()
@@ -82,6 +111,7 @@ process.stdin.on 'data', (c) ->
     when 'k' then me.moveUp()
     when 'l' then me.moveRight()
   entity.moveTowards me for entity in entities
+  checkForCollisions()
 
 charm.removeAllListeners('^C')
 charm.on '^C', ->
