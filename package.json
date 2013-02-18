@@ -1,0 +1,39 @@
+{
+  "name": "daleks",
+  "description": "The best game ever.",
+  "version": "0.1.0",
+  "homepage": "https://github.com/couchand/daleks",
+  "author": {
+    "name": "Andrew Couch",
+    "email": "andy@couchand.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/couchand/daleks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/couchand/daleks/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/couchand/daleks/blob/master/LICENSE-MIT"
+    }
+  ],
+  "main": "lib/daleks",
+  "engines": {
+    "node": ">= 0.6.0"
+  },
+  "scripts": {
+    "test": "grunt nodeunit"
+  },
+  "devDependencies": {
+    "grunt-contrib-concat": "0.1.2rc6",
+    "grunt-contrib-uglify": "0.1.1rc6",
+    "grunt-contrib-jshint": "0.1.1rc6",
+    "grunt-contrib-nodeunit": "0.1.2rc6",
+    "grunt-contrib-watch": "0.2.0rc5",
+    "grunt": "0.4.0rc6"
+  },
+  "keywords": []
+}
