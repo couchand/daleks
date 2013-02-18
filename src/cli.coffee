@@ -50,18 +50,22 @@ setInterval( (->
 
 exiting = no
 
-process.stdin.on 'data', (c) ->
-  switch "#{c}"
-    when "h" then me.moveLeft()
-    when "j" then me.moveDown()
-    when "k" then me.moveUp()
-    when "l" then me.moveRight()
-
-charm.removeAllListeners('^C')
-charm.on '^C', ->
+exit = (chr) ->
   unless exiting
     exiting = yes
-    message('^C again to quit...','cyan')
+    message "#{chr} again to quit...",'cyan'
     return
   charm.reset()
   process.exit()
+
+process.stdin.on 'data', (c) ->
+  switch "#{c}"
+    when 'h' then me.moveLeft()
+    when 'j' then me.moveDown()
+    when 'k' then me.moveUp()
+    when 'l' then me.moveRight()
+    when 'q' then exit 'q'
+
+charm.removeAllListeners('^C')
+charm.on '^C', ->
+  exit '^C'
