@@ -11,7 +11,7 @@ current_message = ''
 message_color = 'cyan'
 
 message = (str, col) ->
-  current_message = str if str?
+  current_message = str if str
   message_color = col if col?
 
 show_message = ->
@@ -59,13 +59,14 @@ exit = (chr) ->
   process.exit()
 
 process.stdin.on 'data', (c) ->
+  return exit 'q' if "#{c}" is 'q'
+  exiting = no
   switch "#{c}"
     when 'h' then me.moveLeft()
     when 'j' then me.moveDown()
     when 'k' then me.moveUp()
     when 'l' then me.moveRight()
-    when 'q' then exit 'q'
 
 charm.removeAllListeners('^C')
 charm.on '^C', ->
-  exit '^C'
+  message 'q to quit', 'red'
