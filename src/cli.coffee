@@ -15,6 +15,7 @@ message = (str, col) ->
   message_color = col if col?
 
 show_message = ->
+  charm.position(0, rows).erase 'line'
   charm.position(0, rows).foreground(message_color).write(current_message)
 
 random = (n) -> Math.floor Math.random() * n + 1
@@ -65,10 +66,13 @@ me.die = ->
   game_over = yes
 
 entities = []
+enemies = []
 
 num_enemies = 4
 for i in [0...num_enemies]
-  entities.push re '¥', 'red'
+  enemy = re '¥', 'red'
+  enemies.push enemy
+  entities.push enemy
 
 checkForCollision = (left, right) ->
   return if left.dead or right.dead
@@ -84,6 +88,12 @@ checkForCollisions = ->
     checkForCollision me, entities[i]
     for j in [i+1...entities.length]
       checkForCollision entities[i], entities[j]
+
+checkForWin = ->
+  for enemy in enemies
+    return if !enemy.dead
+  message 'you won!', 'green'
+  game_over = yes
 
 redraw = ->
   charm.erase 'screen'
@@ -121,6 +131,7 @@ process.stdin.on 'data', (c) ->
     when 't' then me.transport()
   entity.moveTowards me for entity in entities
   checkForCollisions()
+  checkForWin()
 
 charm.removeAllListeners('^C')
 charm.on '^C', ->
