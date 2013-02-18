@@ -25,6 +25,21 @@ class Entity
   moveDown: -> @y = Math.min rows-2, @y+1
   moveUp: -> @y = Math.max 1, @y-1
   moveRight: -> @x = Math.min cols, @x+1
+  moveTowards: (other) ->
+    xd = @x - other.x
+    yd = @y - other.y
+    xda = Math.abs xd
+    yda = Math.abs yd
+    if yda > xda
+      if yd > 0
+        @moveUp()
+      else if yd < 0
+        @moveDown()
+    else
+      if xd > 0
+        @moveLeft()
+      else if xd < 0
+        @moveRight()
 
 e = (ch, co, x, y) ->
   en = new Entity ch, co
@@ -38,12 +53,12 @@ entities = [
   e '¥', 'red', 1, 15
   e '¥', 'red', 27, 25
   e '¥', 'red', 14, 17
-  me
 ]
 
 setInterval( (->
   charm.erase 'screen'
   entity.show() for entity in entities
+  me.show()
   show_message()
   charm.position( cols-1, rows-1 )
 ), 100)
@@ -66,6 +81,7 @@ process.stdin.on 'data', (c) ->
     when 'j' then me.moveDown()
     when 'k' then me.moveUp()
     when 'l' then me.moveRight()
+  entity.moveTowards me for entity in entities
 
 charm.removeAllListeners('^C')
 charm.on '^C', ->
