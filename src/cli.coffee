@@ -17,12 +17,19 @@ message = (str, col) ->
 show_message = ->
   charm.position(0, rows).foreground(message_color).write(current_message)
 
+random = (n) -> Math.floor Math.random() * n + 1
+rr = -> random rows-2
+rc = -> random cols
+
 class Entity
   constructor: (@character, @color) -> @dead = no
   show: ->
     return if @dead
     charm.position( @x, @y ).foreground( @color ).write @character
   die: -> @dead = yes
+  transport: ->
+    @x = rc()
+    @y = rr()
   moveLeft: -> @x = Math.max 1, @x-1
   moveDown: -> @y = Math.min rows-2, @y+1
   moveUp: -> @y = Math.max 1, @y-1
@@ -43,10 +50,6 @@ class Entity
         @moveLeft()
       else if xd < 0
         @moveRight()
-
-random = (n) -> Math.floor Math.random() * n + 1
-rr = -> random rows-2
-rc = -> random cols
 
 e = (ch, co) ->
   en = new Entity ch, co
@@ -112,6 +115,7 @@ process.stdin.on 'data', (c) ->
     when 'j' then me.moveDown()
     when 'k' then me.moveUp()
     when 'l' then me.moveRight()
+    when 't' then me.transport()
   entity.moveTowards me for entity in entities
   checkForCollisions()
 
