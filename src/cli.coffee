@@ -7,7 +7,7 @@ charm.cursor(false)
 cols = process.stdout.columns
 rows = process.stdout.rows
 
-current_message = ''
+current_message = 'hjkl to move, t to transport'
 message_color = 'cyan'
 
 message = (str, col) ->
