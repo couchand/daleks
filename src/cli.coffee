@@ -44,24 +44,26 @@ class Entity
       else if xd < 0
         @moveRight()
 
-e = (ch, co, x, y) ->
+random = (n) -> Math.floor Math.random() * n + 1
+rr = -> random rows-2
+rc = -> random cols
+
+e = (ch, co) ->
   en = new Entity ch, co
-  en.x = x
-  en.y = y
+  en.x = rc()
+  en.y = rr()
   en
 
-me = e '¤', 'cyan', 15, 15
-
+me = e '¤', 'cyan'
 me.die = ->
   message 'Game over, you died :(', 'red'
   game_over = yes
 
-entities = [
-  e '¥', 'red', 7, 5
-  e '¥', 'red', 1, 15
-  e '¥', 'red', 27, 25
-  e '¥', 'red', 14, 17
-]
+entities = []
+
+num_enemies = 4
+for i in [0...num_enemies]
+  entities.push e '¥', 'red'
 
 checkForCollision = (left, right) ->
   if left.x is right.x and left.y is right.y
